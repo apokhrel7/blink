@@ -1,0 +1,123 @@
+use crate::error::{FastFindError, Result};
+use rayon::prelude::*;
+use regex::Regex;
+use std::fs::File;
+use std::io::{BufRead, BufReader, Read};
+use std::path::{Path, PathBuf};
+use walkdir::{DirEntry, WalkDir};
+
+pub struct Match {
+    pub path: PathBuf,
+    pub line_number: usize,
+    pub line: String,
+    pub start: usize,
+    pub end: usize,
+}
+
+/// Checks if a file is likely to be binary by looking for null bytes
+fn is_binary(path: &Path) -> Result<bool> {
+    let file = File::open(path)?;
+    let mut reader = BufReader::new(file);
+    let mut buffer = [0; 1024];
+    
+    match reader.read(&mut buffer) {
+        Ok(n) if n > 0 => Ok(buffer[..n].contains(&0)),
+        Ok(_) => Ok(false),
+        Err(e) => Err(e.into()),
+    }
+}
+
+/// Checks if an entry should be processed based on configuration
+fn should_process(entry: &DirEntry, hidden: bool, extensions: &[String]) -> bool {
+    // Skip hidden files unless explicitly included
+    if !hidden && entry.file_name()
+        .to_str()
+        .map(|s| s.starts_with("."))
+        .unwrap_or(false) {
+        return false;
+    }
+
+    // Skip non-files
+    if !entry.file_type().is_file() {
+        return false;
+    }
+
+    // Apply extension filter if specified
+    if !extensions.is_empty() {
+        entry.path()
+            .extension()
+            .and_then(|e| e.to_str())
+            .map(|ext| extensions.iter().any(|e| e == ext))
+            .unwrap_or(false)
+    } else {
+        true
+    }
+}
+
+pub fn search_files(
+    pattern: &Regex,
+    paths: &[PathBuf],
+    hidden: bool,
+    extensions: &[String],
+) -> Result<Vec<Match>> {
+    // Collect all matching files first
+    let mut files: Vec<PathBuf> = Vec::new();
+    
+    for path in paths {
+        for entry in WalkDir::new(path)
+            .follow_links(true)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            if should_process(&entry, hidden, extensions) {
+                files.push(entry.path().to_owned());
+            }
+        }
+    }
+
+    // Process files in parallel
+    let mut matches = Vec::new();
+    let mut binary_files = Vec::new();
+
+    for path in &files {
+        match search_file(pattern, path) {
+            Ok(file_matches) => matches.extend(file_matches),
+            Err(FastFindError::BinaryFile(path)) => binary_files.push(path),
+            Err(e) => return Err(e),
+        }
+    }
+
+    // Report binary files
+    for path in binary_files {
+        eprintln!("Binary file detected: {}", path);
+    }
+
+    Ok(matches)
+}
+
+fn search_file(pattern: &Regex, path: &Path) -> Result<Vec<Match>> {
+    // Check for binary files
+    if is_binary(path)? {
+        return Err(FastFindError::BinaryFile(path.display().to_string()));
+    }
+
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+    let mut matches = Vec::new();
+
+    for (line_number, line) in reader.lines().enumerate() {
+        let line = line?;
+        
+        for m in pattern.find_iter(&line) {
+            matches.push(Match {
+                path: path.to_owned(),
+                line_number: line_number + 1,
+                line: line.clone(),
+                start: m.start(),
+                end: m.end(),
+            });
+        }
+    }
+
+    Ok(matches)
+} 

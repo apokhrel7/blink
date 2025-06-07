@@ -1,0 +1,26 @@
+[package]
+name = "fast-find"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A fast command-line utility for searching text patterns in files"
+
+[dependencies]
+# CLI parsing with derive macro support
+clap = { version = "4.4", features = ["derive"] }
+# Directory walking/traversal
+walkdir = "2.4"
+# Regex engine
+regex = "1.10"
+# Parallel iterator/threadpool
+rayon = "1.8"
+# Terminal coloring
+colored = "2.1"
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+assert_cmd = "2.0"    # For CLI testing
+predicates = "3.0"    # For test assertions
+tempfile = "3.8"      # For creating temp test files 
