@@ -10,7 +10,7 @@ A fast command-line utility for searching text patterns in files, written in Rus
 - File extension filtering
 - Hidden file inclusion/exclusion
 - Colored output highlighting
-- Context lines around matches
+- Context lines around matches (To be completed)
 - Binary file detection and skipping
 - Cross-platform support
 
