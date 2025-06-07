@@ -63,6 +63,3 @@ fast-find -j 8 "test"
 2. Run `cargo build --release`
 3. The binary will be available at `target/release/fast-find`
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. 
