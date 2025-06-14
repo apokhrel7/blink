@@ -9,13 +9,17 @@ A fast command-line utility for searching text patterns in files written in Rust
   - [Performance](#performance)
     - [Benchmark Results](#benchmark-results)
     - [Multi-threading Performance](#multi-threading-performance)
+    - [Benchmark Details](#benchmark-details)
   - [Usage](#usage)
     - [Options](#options)
+    - [Examples:](#examples)
   - [Development](#development)
     - [Prerequisites](#prerequisites)
     - [Building from Source](#building-from-source)
-    - [Running Locally](#running-locally)
-    - [Installing Globally](#installing-globally)
+    - [Running and Installation](#running-and-installation)
+      - [Development/Testing Mode](#developmenttesting-mode)
+      - [Production Mode](#production-mode)
+    - [Examples:](#examples-1)
     - [Running Tests](#running-tests)
     - [Development Commands](#development-commands)
   - [Contributing](#contributing)
@@ -33,21 +37,54 @@ A fast command-line utility for searching text patterns in files written in Rust
 
 ## Performance
 
-Blink is designed for speed, leveraging Rust's performance and parallel processing capabilities. Our benchmarks show significant performance advantages over traditional search tools.
+Blink is designed for speed, leveraging Rust's performance and parallel processing capabilities. These benchmarks show significant performance advantages over traditional search tools.
+
+To run the benchmarks:
+
+**1. Generate Test Data**:
+```bash
+cargo run --bin generate_test_data
+```
+Creates three datasets: small (100 files), medium (1000 files), and large (10000 files)
+
+**2. Run Benchmark Suite**:
+```bash
+# On Windows:
+.\benchmarks\run_benchmarks.ps1
+
+# On Unix:
+./benchmarks/run_benchmarks.sh
+```
+
+The benchmark suite:
+- Uses hyperfine for accurate measurements
+- Performs 10 warmup runs
+- Runs each test at least 20 times
+- Measures statistical variance
+- Compares against ripgrep and findstr
+- Tests different thread counts
+
+**3. View Results**:
+The benchmarks generate several Markdown reports:
+- `small_results.md`: Results for 100-file dataset
+- `medium_results.md`: Results for 1000-file dataset
+- `large_results.md`: Results for 10000-file dataset
+- `threading_results.md`: Multi-threading performance comparison
+- `benchmark_report.md`: Combined report of all results
 
 ### Benchmark Results
 
 | Dataset Size | Blink | findstr | ripgrep | vs findstr | vs ripgrep |
 |-------------|-----------|---------|----------|------------|------------|
 | Small (100 files) | 44.7 ms | 45.6 ms | 87.3 ms | 1.02x faster | 1.95x faster |
-| Medium (1000 files) | 58.5 ms | 44.4 ms | 90.5 ms | 0.76x | 1.55x faster |
+| Medium (1000 files) | 58.5 ms | 44.4 ms | 90.5 ms | 0.76x slower | 1.55x faster |
 | Large (10000 files) | 25.0 ms | 46.4 ms | 100.2 ms | 1.86x faster | 4.01x faster |
 
-*Note: Lower times are better. Results from Windows 10, AMD Ryzen 7 5800X*
+*Note: Results from Windows 11, Intel Core i5-10210U, 16 GB RAM. Your results may vary based on hardware.*
 
 ### Multi-threading Performance
 
-Blink supports parallel processing with a simple `-j` flag to control thread count. Our testing shows optimal performance with 4 threads on most systems:
+Blink supports parallel processing with a simple `-j` flag to control thread count. This testing shows optimal performance with 4 threads on most systems:
 
 | Thread Count | Time (ms) | vs Single Thread |
 |-------------|-----------|------------------|
@@ -58,46 +95,71 @@ Blink supports parallel processing with a simple `-j` flag to control thread cou
 **Recommended Usage:**
 - For most systems, using `-j 4` provides the best balance of performance and resource usage
 - Adjust thread count based on your specific hardware if needed
+- Performance may vary based on:
+  - CPU core count and speed
+  - Disk I/O capabilities
+  - Dataset size and file distribution
+  - Search pattern complexity
 - Default thread count matches your CPU core count
 
+### Benchmark Details
 
+The benchmark suite tests:
+1. **Search Speed**: How quickly files can be searched
+2. **Threading Impact**: Performance with different thread counts
+3. **Statistical Variance**: Consistency of performance
+4. **Comparative Performance**: Against other search tools
+
+Each test dataset contains:
+- A mix of text files with random content
+- ~10% of lines containing searchable patterns
+- Varying file sizes and line counts
+- Consistent pattern distribution
+
+To run your own custom benchmarks or modify parameters, see the scripts in the `benchmarks/` directory.
 
 ## Usage
 
 Basic usage:
 
 ```bash
-blink <pattern> [path...]
+blink <pattern> [optional path...]
 ```
+*Note: if you don't specify a path, the search will be performed in the current directory by default.*
 
-Examples:
+### Options
+- `-i, --case-insensitive`: Perform case-insensitive matching
+- `-h, --hidden`: Include hidden files and directories
+- `-e, --extensions <EXTENSIONS>`: Filter by file extension (e.g., "rs,txt")
+- `-j, --threads <N>`: Number of worker threads (defaults to CPU cores)
+
+### Examples:
 
 ```bash
 # Search for "TODO" in current directory
 blink "TODO"
 
 # Search for a phrase with spaces
-blink "hello world" src/
+blink "hello world"
 
-# Search for regex pattern with special characters
+# Search for regex pattern with special characters in src directory
 blink "(TODO|FIXME)" src/
 
 # Case-insensitive search for "error" in src directory
 blink -i "error" src/
 
-# Search for "fn" in Rust files only
+# Search for "fn" in Rust files only inside src directory
 blink -e rs "fn" src/
+
+# # Search for "TODO" including hidden files and directories
+blink -h "TODO" 
 
 # Search with 8 threads and regex pattern
 blink -j 8 "(test|spec)"
+
+# Search for "error" case-insensitively in only Rust and text files
+blink -i -e rs,txt "error"
 ```
-
-### Options
-
-- `-i, --case-insensitive`: Perform case-insensitive matching
-- `-h, --hidden`: Include hidden files and directories
-- `-e, --extensions <EXTENSIONS>`: Filter by file extension (e.g., "rs,txt")
-- `-j, --threads <N>`: Number of worker threads (defaults to CPU cores)
 
 ## Development
 
