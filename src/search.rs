@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
 use walkdir::{DirEntry, WalkDir};
+use std::sync::Mutex;
 
 pub struct Match {
     pub path: PathBuf,
@@ -61,38 +62,43 @@ pub fn search_files(
     extensions: &[String],
 ) -> Result<Vec<Match>> {
     // Collect all matching files first
-    let mut files: Vec<PathBuf> = Vec::new();
-    
-    for path in paths {
-        for entry in WalkDir::new(path)
-            .follow_links(true)
-            .into_iter()
-            .filter_map(|e| e.ok())
-        {
-            if should_process(&entry, hidden, extensions) {
-                files.push(entry.path().to_owned());
-            }
-        }
-    }
+    let files: Vec<PathBuf> = paths.iter()
+        .flat_map(|path| {
+            WalkDir::new(path)
+                .follow_links(true)
+                .into_iter()
+                .filter_map(|e| e.ok())
+                .filter(|e| should_process(e, hidden, extensions))
+                .map(|e| e.path().to_owned())
+                .collect::<Vec<_>>()
+        })
+        .collect();
 
     // Process files in parallel
-    let mut matches = Vec::new();
-    let mut binary_files = Vec::new();
+    let matches = Mutex::new(Vec::new());
+    let binary_files = Mutex::new(Vec::new());
 
-    for path in &files {
-        match search_file(pattern, path) {
-            Ok(file_matches) => matches.extend(file_matches),
-            Err(FastFindError::BinaryFile(path)) => binary_files.push(path),
-            Err(e) => return Err(e),
-        }
-    }
+    files.par_iter()
+        .try_for_each(|path| -> Result<()> {
+            match search_file(pattern, path) {
+                Ok(file_matches) => {
+                    matches.lock().unwrap().extend(file_matches);
+                    Ok(())
+                },
+                Err(FastFindError::BinaryFile(path)) => {
+                    binary_files.lock().unwrap().push(path);
+                    Ok(())
+                },
+                Err(e) => Err(e),
+            }
+        })?;
 
     // Report binary files
-    for path in binary_files {
+    for path in binary_files.into_inner().unwrap() {
         eprintln!("Binary file detected: {}", path);
     }
 
-    Ok(matches)
+    Ok(matches.into_inner().unwrap())
 }
 
 fn search_file(pattern: &Regex, path: &Path) -> Result<Vec<Match>> {
