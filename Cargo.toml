@@ -7,7 +7,7 @@ description = "A fast command-line utility for searching text patterns in files"
 
 [dependencies]
 # CLI parsing with derive macro support
-clap = { version = "4.4", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 # Directory walking/traversal
 walkdir = "2.4"
 # Regex engine
@@ -18,9 +18,15 @@ rayon = "1.8"
 colored = "2.1"
 # Error handling
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
+rand = "0.8"
 
 [dev-dependencies]
 assert_cmd = "2.0"    # For CLI testing
 predicates = "3.0"    # For test assertions
-tempfile = "3.8"      # For creating temp test files 
+tempfile = "3.8"      # For creating temp test files
+hyperfine = "1.18"
+
+[[bin]]
+name = "generate_test_data"
+path = "benchmarks/generate_test_data.rs" 
