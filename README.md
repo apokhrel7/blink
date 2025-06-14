@@ -129,15 +129,47 @@ blink -j 8 "(test|spec)"
    - Windows: `target/release/blink.exe`
    - Unix-like: `target/release/blink`
 
-### Running Locally
+### Running and Installation
 
-You can run the program directly using Cargo:
+There are two main ways to use Blink:
 
+#### Development/Testing Mode
+Using `cargo run` is best for development and debugging:
 ```bash
+# Debug build (slower, with debug symbols)
 cargo run -- <pattern> [path...]
+
+# Release build (faster, optimized)
+cargo run --release -- <pattern> [path...]
+```
+*Note: The `--` is required to separate cargo's arguments from blink's arguments*
+
+Use this mode when:
+- You're actively developing or debugging
+- You want to test changes immediately
+- You need debug symbols and stack traces
+- You're working within the project directory
+
+#### Production Mode
+For regular usage, install and use the `blink` command directly:
+```bash
+# Install blink globally
+cargo install --path .
+
+# Use from any directory
+blink <pattern> [path...]
 ```
 
-For example:
+Use this mode when:
+- You want maximum performance
+- You're using it as a regular command-line tool
+- You need to run it from any directory
+- You've finished development
+
+The installed version will always be faster as it's pre-compiled in release mode and doesn't need to check for changes.
+
+### Examples:
+
 ```bash
 # Search for "TODO" in current directory
 cargo run -- "TODO"
@@ -145,21 +177,6 @@ cargo run -- "TODO"
 # Case-insensitive search with file extension filter
 cargo run -- -i -e rs "fn" src/
 ```
-
-### Installing Globally
-
-Since this is a local development project, you can install it locally:
-
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd blink
-
-# Install locally
-cargo install --path .
-```
-
-This will install the `blink` binary to your Cargo binary directory (`~/.cargo/bin/` on Unix-like systems or `%USERPROFILE%\.cargo\bin` on Windows).
 
 ### Running Tests
 
@@ -171,12 +188,21 @@ cargo test
 # Run tests with output
 cargo test -- --nocapture
 
-# Run specific test
-cargo test <test_name>
+# Run only CLI tests
+cargo test --test cli
 
-# Run benchmarks
+# Run only performance tests
 cargo test --test benchmark
 ```
+
+The CLI tests verify:
+- Basic search functionality
+- Binary file detection
+
+The performance tests measure search speed across:
+- Small dataset (100 files)
+- Medium dataset (1000 files)
+- Large dataset (10000 files)
 
 Run the test suite with coverage (requires cargo-tarpaulin):
 ```bash
