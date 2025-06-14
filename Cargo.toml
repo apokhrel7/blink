@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <your.email@example.com>"]
 description = "A fast command-line utility for searching text patterns in files"
+default-run = "blink"
 
 [dependencies]
 # CLI parsing with derive macro support
