@@ -2,13 +2,11 @@ use crate::search::Match;
 use colored::*;
 use std::io::{self, Write};
 
-pub struct Printer {
-    context_lines: usize,
-}
+pub struct Printer {}
 
 impl Printer {
-    pub fn new(context_lines: usize) -> Self {
-        Self { context_lines }
+    pub fn new(_context_lines: usize) -> Self {
+        Self {}
     }
 
     pub fn print_match(&self, m: &Match) -> io::Result<()> {
