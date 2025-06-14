@@ -1,6 +1,6 @@
-# fast-find
+# Blink
 
-A fast command-line utility for searching text patterns in files, written in Rust.
+A fast command-line utility for searching text patterns in files written in Rust.
 
 ## Features
 
