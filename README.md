@@ -290,5 +290,5 @@ cargo test --doc
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request (template and CI/CD workflow will be provided later).
 
