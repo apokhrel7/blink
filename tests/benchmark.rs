@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod benchmarks {
-    use blink::search::{search_files, Match};
+    use blink::search::{search_files};
     use regex::Regex;
     use std::fs::{self, File};
     use std::io::Write;
