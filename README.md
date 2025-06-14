@@ -9,7 +9,6 @@ A fast command-line utility for searching text patterns in files written in Rust
   - [Performance](#performance)
     - [Benchmark Results](#benchmark-results)
     - [Multi-threading Performance](#multi-threading-performance)
-  - [Installation](#installation)
   - [Usage](#usage)
     - [Options](#options)
   - [Development](#development)
@@ -29,7 +28,6 @@ A fast command-line utility for searching text patterns in files written in Rust
 - File extension filtering
 - Hidden file inclusion/exclusion
 - Colored output highlighting
-- Context lines around matches
 - Binary file detection and skipping
 - Cross-platform support
 
@@ -62,13 +60,7 @@ Blink supports parallel processing with a simple `-j` flag to control thread cou
 - Adjust thread count based on your specific hardware if needed
 - Default thread count matches your CPU core count
 
-## Installation
 
-Using Cargo:
-
-```bash
-cargo install blink
-```
 
 ## Usage
 
@@ -82,10 +74,16 @@ Examples:
 
 ```bash
 # Search for "TODO" in current directory
-blink TODO
+blink "TODO"
+
+# Search for a phrase with spaces
+blink "hello world" src/
+
+# Search for regex pattern with special characters
+blink "(TODO|FIXME)" src/
 
 # Case-insensitive search for "error" in src directory
-blink -i error src/
+blink -i "error" src/
 
 # Search for "fn" in Rust files only
 blink -e rs "fn" src/
@@ -93,8 +91,8 @@ blink -e rs "fn" src/
 # Show 2 lines of context around matches
 blink -C 2 "panic!" src/
 
-# Search with 8 threads
-blink -j 8 "test"
+# Search with 8 threads and regex pattern
+blink -j 8 "(test|spec)"
 ```
 
 ### Options
@@ -146,7 +144,7 @@ cargo run -- <pattern> [path...]
 For example:
 ```bash
 # Search for "TODO" in current directory
-cargo run -- TODO
+cargo run -- "TODO"
 
 # Case-insensitive search with file extension filter
 cargo run -- -i -e rs "fn" src/
