@@ -1,0 +1,46 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  benchmark:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        
+    - name: Install hyperfine
+      run: cargo install hyperfine
+      
+    - name: Install ripgrep
+      run: cargo install ripgrep
+      
+    - name: Build test data
+      run: |
+        cargo run --release --bin generate_test_data
+        
+    - name: Run benchmarks
+      run: |
+        chmod +x benchmarks/run_benchmarks.ps1
+        ./benchmarks/run_benchmarks.ps1
+        
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmark-results
+        path: |
+          small_results.md
+          medium_results.md
+          large_results.md
+          threading_results.md 
