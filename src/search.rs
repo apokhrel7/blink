@@ -112,7 +112,14 @@ fn search_file(pattern: &Regex, path: &Path) -> Result<Vec<Match>> {
     let mut matches = Vec::new();
 
     for (line_number, line) in reader.lines().enumerate() {
-        let line = line?;
+        let line = match line {
+            Ok(line) => line,
+            Err(e) if e.kind() == std::io::ErrorKind::InvalidData => {
+                // Skip lines that aren't valid UTF-8
+                continue;
+            }
+            Err(e) => return Err(e.into()),
+        };
         
         for m in pattern.find_iter(&line) {
             matches.push(Match {
