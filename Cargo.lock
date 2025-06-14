@@ -140,6 +140,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "blink"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "assert_cmd",
+ "clap",
+ "colored",
+ "hyperfine",
+ "predicates",
+ "rand 0.8.5",
+ "rayon",
+ "regex",
+ "tempfile",
+ "thiserror",
+ "walkdir",
+]
+
+[[package]]
 name = "borsh"
 version = "1.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -391,24 +409,6 @@ checksum = "cea14ef9355e3beab063703aa9dab15afd25f0667c341310c1e5274bb1d0da18"
 dependencies = [
  "libc",
  "windows-sys",
-]
-
-[[package]]
-name = "blink"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "assert_cmd",
- "clap",
- "colored",
- "hyperfine",
- "predicates",
- "rand 0.8.5",
- "rayon",
- "regex",
- "tempfile",
- "thiserror",
- "walkdir",
 ]
 
 [[package]]
