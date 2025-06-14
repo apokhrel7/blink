@@ -10,7 +10,7 @@ if (!(Get-Command rg -ErrorAction SilentlyContinue)) {
     cargo install ripgrep
 }
 
-# Build fast-find in release mode
+# Build blink in release mode
 cargo build --release
 
 # Define search patterns and directories
@@ -34,7 +34,7 @@ Write-Host "Running benchmarks..."
 Write-Host "`nSmall dataset (100 files):"
 hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-markdown small_results.md `
     --prepare "echo 'Running small dataset benchmark...'" `
-    ".\target\release\fast-find.exe $PATTERN $SMALL_DIR" `
+    ".\target\release\blink.exe $PATTERN $SMALL_DIR" `
     "findstr /S $PATTERN $SMALL_DIR\*.* 2>NUL" `
     "rg --no-messages $PATTERN $SMALL_DIR"
 
@@ -42,7 +42,7 @@ hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-mark
 Write-Host "`nMedium dataset (1000 files):"
 hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-markdown medium_results.md `
     --prepare "echo 'Running medium dataset benchmark...'" `
-    ".\target\release\fast-find.exe $PATTERN $MEDIUM_DIR" `
+    ".\target\release\blink.exe $PATTERN $MEDIUM_DIR" `
     "findstr /S $PATTERN $MEDIUM_DIR\*.* 2>NUL" `
     "rg --no-messages $PATTERN $MEDIUM_DIR"
 
@@ -50,7 +50,7 @@ hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-mark
 Write-Host "`nLarge dataset (10000 files):"
 hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-markdown large_results.md `
     --prepare "echo 'Running large dataset benchmark...'" `
-    ".\target\release\fast-find.exe $PATTERN $LARGE_DIR" `
+    ".\target\release\blink.exe $PATTERN $LARGE_DIR" `
     "findstr /S $PATTERN $LARGE_DIR\*.* 2>NUL" `
     "rg --no-messages $PATTERN $LARGE_DIR"
 
@@ -58,9 +58,9 @@ hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-mark
 Write-Host "`nMulti-threaded search (large dataset):"
 hyperfine --warmup 10 --min-runs 20 --ignore-failure --show-output --export-markdown threading_results.md `
     --prepare "echo 'Running threading benchmark...'" `
-    ".\target\release\fast-find.exe -j 1 $PATTERN $LARGE_DIR" `
-    ".\target\release\fast-find.exe -j 4 $PATTERN $LARGE_DIR" `
-    ".\target\release\fast-find.exe -j 8 $PATTERN $LARGE_DIR"
+    ".\target\release\blink.exe -j 1 $PATTERN $LARGE_DIR" `
+    ".\target\release\blink.exe -j 4 $PATTERN $LARGE_DIR" `
+    ".\target\release\blink.exe -j 8 $PATTERN $LARGE_DIR"
 
 # Combine results into a single report
 Write-Host "`nGenerating combined report..."

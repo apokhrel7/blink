@@ -14,7 +14,7 @@ fn find_content_in_file() -> Result<(), Box<dyn std::error::Error>> {
     writeln!(file, "with multiple lines")?;
     writeln!(file, "and some test content")?;
 
-    let mut cmd = Command::cargo_bin("fast-find")?;
+    let mut cmd = Command::cargo_bin("blink")?;
     cmd.arg("test")
         .arg(temp_dir.path());
     
@@ -36,7 +36,7 @@ fn binary_file_detection() -> Result<(), Box<dyn std::error::Error>> {
     let data: Vec<u8> = (0..1024).map(|i| (i % 256) as u8).collect();
     file.write_all(&data)?;
 
-    let mut cmd = Command::cargo_bin("fast-find")?;
+    let mut cmd = Command::cargo_bin("blink")?;
     cmd.arg("test")
         .arg(&file_path);
     

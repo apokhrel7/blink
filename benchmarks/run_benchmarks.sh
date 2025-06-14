@@ -12,7 +12,7 @@ if ! command -v rg &> /dev/null; then
     cargo install ripgrep
 fi
 
-# Build fast-find in release mode
+# Build blink in release mode
 cargo build --release
 
 # Define search patterns and directories
@@ -26,7 +26,7 @@ echo "Running benchmarks..."
 # Small dataset benchmarks
 echo "Small dataset (100 files):"
 hyperfine --warmup 3 \
-    "./target/release/fast-find '$PATTERN' $SMALL_DIR" \
+    "./target/release/blink '$PATTERN' $SMALL_DIR" \
     "grep -r '$PATTERN' $SMALL_DIR" \
     "rg '$PATTERN' $SMALL_DIR" \
     --export-markdown small_results.md
@@ -34,7 +34,7 @@ hyperfine --warmup 3 \
 # Medium dataset benchmarks
 echo "Medium dataset (1000 files):"
 hyperfine --warmup 3 \
-    "./target/release/fast-find '$PATTERN' $MEDIUM_DIR" \
+    "./target/release/blink '$PATTERN' $MEDIUM_DIR" \
     "grep -r '$PATTERN' $MEDIUM_DIR" \
     "rg '$PATTERN' $MEDIUM_DIR" \
     --export-markdown medium_results.md
@@ -42,7 +42,7 @@ hyperfine --warmup 3 \
 # Large dataset benchmarks
 echo "Large dataset (10000 files):"
 hyperfine --warmup 3 \
-    "./target/release/fast-find '$PATTERN' $LARGE_DIR" \
+    "./target/release/blink '$PATTERN' $LARGE_DIR" \
     "grep -r '$PATTERN' $LARGE_DIR" \
     "rg '$PATTERN' $LARGE_DIR" \
     --export-markdown large_results.md
@@ -50,7 +50,7 @@ hyperfine --warmup 3 \
 # Multi-threaded comparison
 echo "Multi-threaded search (large dataset):"
 hyperfine --warmup 3 \
-    "./target/release/fast-find -j 1 '$PATTERN' $LARGE_DIR" \
-    "./target/release/fast-find -j 4 '$PATTERN' $LARGE_DIR" \
-    "./target/release/fast-find -j 8 '$PATTERN' $LARGE_DIR" \
+    "./target/release/blink -j 1 '$PATTERN' $LARGE_DIR" \
+    "./target/release/blink -j 4 '$PATTERN' $LARGE_DIR" \
+    "./target/release/blink -j 8 '$PATTERN' $LARGE_DIR" \
     --export-markdown threading_results.md 
