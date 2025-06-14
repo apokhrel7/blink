@@ -88,9 +88,6 @@ blink -i "error" src/
 # Search for "fn" in Rust files only
 blink -e rs "fn" src/
 
-# Show 2 lines of context around matches
-blink -C 2 "panic!" src/
-
 # Search with 8 threads and regex pattern
 blink -j 8 "(test|spec)"
 ```
@@ -100,7 +97,6 @@ blink -j 8 "(test|spec)"
 - `-i, --case-insensitive`: Perform case-insensitive matching
 - `-h, --hidden`: Include hidden files and directories
 - `-e, --extensions <EXTENSIONS>`: Filter by file extension (e.g., "rs,txt")
-- `-C, --context-lines <N>`: Number of context lines to show
 - `-j, --threads <N>`: Number of worker threads (defaults to CPU cores)
 
 ## Development
@@ -152,13 +148,18 @@ cargo run -- -i -e rs "fn" src/
 
 ### Installing Globally
 
-To install the binary globally on your system:
+Since this is a local development project, you can install it locally:
 
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd blink
+
+# Install locally
 cargo install --path .
 ```
 
-This will install the `blink` binary to your Cargo binary directory (usually `~/.cargo/bin/` on Unix-like systems or `%USERPROFILE%\.cargo\bin` on Windows).
+This will install the `blink` binary to your Cargo binary directory (`~/.cargo/bin/` on Unix-like systems or `%USERPROFILE%\.cargo\bin` on Windows).
 
 ### Running Tests
 
@@ -172,6 +173,9 @@ cargo test -- --nocapture
 
 # Run specific test
 cargo test <test_name>
+
+# Run benchmarks
+cargo test --test benchmark
 ```
 
 Run the test suite with coverage (requires cargo-tarpaulin):
