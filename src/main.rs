@@ -35,12 +35,16 @@ fn main() -> Result<()> {
     // Get file extensions to filter
     let extensions = cli.extensions();
 
+    // Get exclusion patterns
+    let exclusions = cli.exclusions();
+
     // Search for matches
     match search::search_files(
         &pattern,
         &paths,
         cli.hidden,
         &extensions,
+        &exclusions,
     ) {
         Ok(matches) => {
             // Print matches

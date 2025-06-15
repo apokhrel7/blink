@@ -29,7 +29,7 @@ fn is_binary(path: &Path) -> Result<bool> {
 }
 
 /// Checks if an entry should be processed based on configuration
-fn should_process(entry: &DirEntry, hidden: bool, extensions: &[String]) -> bool {
+fn should_process(entry: &DirEntry, hidden: bool, extensions: &[String], exclusions: &[String]) -> bool {
     // Skip hidden files unless explicitly included
     if !hidden && entry.file_name()
         .to_str()
@@ -41,6 +41,14 @@ fn should_process(entry: &DirEntry, hidden: bool, extensions: &[String]) -> bool
     // Skip non-files
     if !entry.file_type().is_file() {
         return false;
+    }
+
+    // Check exclusions
+    if !exclusions.is_empty() {
+        let path_str = entry.path().to_string_lossy();
+        if exclusions.iter().any(|excl| path_str.contains(excl)) {
+            return false;
+        }
     }
 
     // Apply extension filter if specified
@@ -60,6 +68,7 @@ pub fn search_files(
     paths: &[PathBuf],
     hidden: bool,
     extensions: &[String],
+    exclusions: &[String],
 ) -> Result<Vec<Match>> {
     // Collect all matching files first
     let files: Vec<PathBuf> = paths.iter()
@@ -68,7 +77,7 @@ pub fn search_files(
                 .follow_links(true)
                 .into_iter()
                 .filter_map(|e| e.ok())
-                .filter(|e| should_process(e, hidden, extensions))
+                .filter(|e| should_process(e, hidden, extensions, exclusions))
                 .map(|e| e.path().to_owned())
                 .collect::<Vec<_>>()
         })
@@ -94,9 +103,9 @@ pub fn search_files(
         })?;
 
     // Report binary files
-    for path in binary_files.into_inner().unwrap() {
-        eprintln!("Binary file detected: {}", path);
-    }
+    //for path in binary_files.into_inner().unwrap() {
+        //eprintln!("Binary file detected: {}", path);
+    //}
 
     Ok(matches.into_inner().unwrap())
 }

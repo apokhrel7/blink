@@ -32,6 +32,10 @@ pub struct Cli {
     /// Number of worker threads (defaults to number of CPU cores)
     #[arg(short = 'j', long)]
     pub threads: Option<usize>,
+
+    /// Exclude files/directories matching these patterns (comma-separated)
+    #[arg(short = 'x', long)]
+    pub exclude: Option<String>,
 }
 
 impl Cli {
@@ -49,6 +53,13 @@ impl Cli {
         self.extensions
             .as_ref()
             .map(|e| e.split(',').map(str::to_string).collect())
+            .unwrap_or_default()
+    }
+
+    pub fn exclusions(&self) -> Vec<String> {
+        self.exclude
+            .as_ref()
+            .map(|s| s.split(',').map(str::to_string).collect())
             .unwrap_or_default()
     }
 } 
