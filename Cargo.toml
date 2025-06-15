@@ -8,15 +8,15 @@ default-run = "blink"
 
 [dependencies]
 # CLI parsing with derive macro support
-clap = { version = "4.5", features = ["derive"] }
+clap = { version = "4.4.11", features = ["derive"] }
 # Directory walking/traversal
-walkdir = "2.4"
+walkdir = "2.4.0"
 # Regex engine
-regex = "1.10"
+regex = "1.10.2"
 # Parallel iterator/threadpool
-rayon = "1.8"
+rayon = "1.8.0"
 # Terminal coloring
-colored = "2.1"
+colored = "2.0.4"
 # Error handling
 anyhow = "1.0"
 thiserror = "2.0"
@@ -26,8 +26,19 @@ rand = "0.8"
 assert_cmd = "2.0"    # For CLI testing
 predicates = "3.0"    # For test assertions
 tempfile = "3.8"      # For creating temp test files
+reqwest = { version = "0.11", features = ["blocking"] }
+tokio = { version = "1.0", features = ["full"] }
+flate2 = "1.0"
+tar = "0.4"
+encoding_rs = "0.8"
+criterion = "0.5"
 hyperfine = "1.18"
+
+[[bench]]
+name = "suite"
+harness = false
+path = "benches/suite/mod.rs"
 
 [[bin]]
 name = "generate_test_data"
-path = "benchmarks/generate_test_data.rs" 
+path = "benches/data/mod.rs" 
