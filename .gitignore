@@ -32,4 +32,7 @@ Thumbs.db
 *.dylib
 
 # Test coverage
-coverage/ 
+coverage/
+
+# Benchmark data
+benchmark_data/ 
