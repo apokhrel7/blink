@@ -1,35 +1,33 @@
-# Blink
+# Blink <!-- omit in toc -->
 
 A fast command-line utility for searching text patterns in files written in Rust.
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
-- [Blink](#blink)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [When to Use Blink](#when-to-use-blink)
-  - [Performance](#performance)
-    - [Benchmark Results](#benchmark-results)
-      - [Simple Text Search](#simple-text-search)
-      - [Case-Insensitive Search](#case-insensitive-search)
-      - [Regex Pattern Search](#regex-pattern-search)
-      - [Parallelization and Multi-threading Benefits](#parallelization-and-multi-threading-benefits)
-    - [Customizing Benchmarks](#customizing-benchmarks)
-    - [Areas for Improvement](#areas-for-improvement)
-    - [Hardware Note](#hardware-note)
-  - [Usage](#usage)
-    - [Options](#options)
-    - [Examples](#examples)
-  - [Development](#development)
-    - [Prerequisites](#prerequisites)
-    - [Building from Source](#building-from-source)
-    - [Running and Installation](#running-and-installation)
-      - [Development/Testing Mode](#developmenttesting-mode)
-      - [Production Mode](#production-mode)
-    - [Examples](#examples-1)
-    - [Running Tests](#running-tests)
-    - [Development Commands](#development-commands)
-  - [Contributing](#contributing)
+- [Features](#features)
+- [When to Use Blink](#when-to-use-blink)
+- [Performance](#performance)
+  - [Benchmark Results](#benchmark-results)
+    - [Simple Text Search (Pattern: "TODO")](#simple-text-search-pattern-todo)
+    - [Case-Insensitive Search (Pattern: "(?i)fixme")](#case-insensitive-search-pattern-ifixme)
+    - [Regex Pattern Search (Pattern: "class")](#regex-pattern-search-pattern-class)
+    - [Multi-threading Impact (Pattern: "TODO")](#multi-threading-impact-pattern-todo)
+    - [Simple Text Search](#simple-text-search)
+    - [Case-Insensitive Search](#case-insensitive-search)
+    - [Regex Pattern Search](#regex-pattern-search)
+    - [Parallelization and Multi-threading Benefits](#parallelization-and-multi-threading-benefits)
+  - [Customizing Benchmarks](#customizing-benchmarks)
+  - [Areas for Improvement](#areas-for-improvement)
+  - [Hardware Note](#hardware-note)
+- [Production/Release](#productionrelease)
+  - [Prerequisites](#prerequisites)
+  - [Options](#options)
+  - [Examples](#examples)
+- [Testing/Development](#testingdevelopment)
+  - [Examples](#examples-1)
+  - [Running Tests](#running-tests)
+  - [Development Commands](#development-commands)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -83,20 +81,10 @@ b) Internal Benchmarks (For developers):
 **3. View Results**:
 The benchmarks generate several Markdown reports:
 
-Simple pattern search results:
-- `results_simple_small.md`: Results for simple pattern search on 100-file dataset
-- `results_simple_medium.md`: Results for simple pattern search on 1000-file dataset
-- `results_simple_large.md`: Results for simple pattern search on 10000-file dataset
-
-Case-insensitive search results:
-- `results_case_insensitive_small.md`: Results for case-insensitive search on 100-file dataset
-- `results_case_insensitive_medium.md`: Results for case-insensitive search on 1000-file dataset
-- `results_case_insensitive_large.md`: Results for case-insensitive search on 10000-file dataset
-
-Regex pattern search results:
-- `results_regex_small.md`: Results for regex pattern search on 100-file dataset
-- `results_regex_medium.md`: Results for regex pattern search on 1000-file dataset
-- `results_regex_large.md`: Results for regex pattern search on 10000-file dataset
+Search results:
+- `results_[type_of_files]_small.md`: 100-file dataset
+- `results_[type_of_files]_medium.md`: 1000-file dataset
+- `results_[type_of_files]_large.md`: 10000-file dataset
 
 Additional reports:
 - `threading_results.md`: Multi-threading performance comparison
@@ -111,7 +99,38 @@ The comparative benchmarks test:
 3. **Statistical Variance**: Consistency of performance
 4. **Comparative Performance**: Against other search tools
 
-[View the complete benchmark report here](benchmark_report.md)
+*The following shows how Blink performed against other popular search tools on a large dataset of 10,000 files:*
+
+#### Simple Text Search (Pattern: "TODO")
+| Tool | Mean [ms] | Min [ms] | Max [ms] |
+|:---|---:|---:|---:|
+| Blink | 34.3 ± 6.1 | 23.2 | 47.0 |
+| findstr | 49.9 ± 7.8 | 35.8 | 68.5 |
+| ripgrep | 48.1 ± 4.9 | 42.5 | 61.7 |
+
+#### Case-Insensitive Search (Pattern: "(?i)fixme")
+| Tool | Mean [ms] | Min [ms] | Max [ms] |
+|:---|---:|---:|---:|
+| Blink | 28.8 ± 4.5 | 21.4 | 36.3 |
+| findstr | 33.4 ± 9.5 | 24.2 | 58.2 |
+| ripgrep | 50.3 ± 7.1 | 41.6 | 68.9 |
+
+#### Regex Pattern Search (Pattern: "class")
+| Tool | Mean [ms] | Min [ms] | Max [ms] |
+|:---|---:|---:|---:|
+| Blink | 46.2 ± 11.3 | 29.7 | 69.3 |
+| findstr | 30.0 ± 2.3 | 25.1 | 34.4 |
+| ripgrep | 55.1 ± 7.7 | 42.9 | 69.7 |
+
+#### Multi-threading Impact (Pattern: "TODO")
+| Threads | Mean [ms] | Min [ms] | Max [ms] | Relative Speed |
+|:---|---:|---:|---:|---:|
+| 1 thread | 56.8 ± 9.3 | 44.1 | 80.7 | 1x (baseline) |
+| 4 threads | 25.1 ± 4.5 | 16.9 | 34.3 | 2.26x faster |
+| 8 threads | 25.4 ± 19.5 | 15.4 | 106.5 | ~2.26x faster |
+
+
+[View detailed benchmark methodology and complete results](benchmark_report.md)
 
 *Note: Results from Windows 11, Intel Core i5-10210U, 16 GB RAM. Your results may vary based on hardware.*
 
@@ -187,13 +206,52 @@ These benchmarks were run on Windows with specific hardware. Your results may va
 - Dataset characteristics
 - Search pattern complexity
 
-## Usage
 
-Basic usage:
 
+## Production/Release
+This section is useful when:
+- You want maximum performance
+- You're using it as a regular command-line tool
+- You need to run it from any directory
+- You've finished development
+
+The installed version will always be faster as it's pre-compiled in release mode and doesn't need to check for changes.
+### Prerequisites
+
+- Rust toolchain (rustc, cargo) - Install via [rustup](https://rustup.rs/)
+- For Windows users: Microsoft Visual Studio Build Tools with C++ build tools
+- Git for version control
+
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd blink
+   ```
+
+2. Build in debug mode (for development):
+   ```bash
+   cargo build
+   ```
+
+3. Build for release (optimized):
+   ```bash
+   cargo build --release
+   ```
+
+   The binary will be available at:
+   - Windows: `target/release/blink.exe`
+   - Unix-like: `target/release/blink`
+
+For regular usage, install and use the `blink` command directly:
 ```bash
-blink <pattern> [optional path...]
+# Install blink globally
+cargo install --path .
+
+# Use from any directory
+blink <pattern> [path...]
 ```
+
 *Note: if you don't specify a path, the search will be performed in the current directory by default.*
 
 ### Options
@@ -237,41 +295,14 @@ blink -j 8 "(test|spec)"
 blink -i -e rs,txt "error"
 ```
 
-## Development
 
-### Prerequisites
+## Testing/Development
+This section is useful when:
+- You're actively developing or debugging
+- You want to test changes immediately
+- You need debug symbols and stack traces
+- You're working within the project directory
 
-- Rust toolchain (rustc, cargo) - Install via [rustup](https://rustup.rs/)
-- For Windows users: Microsoft Visual Studio Build Tools with C++ build tools
-- Git for version control
-
-### Building from Source
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd blink
-   ```
-
-2. Build in debug mode (for development):
-   ```bash
-   cargo build
-   ```
-
-3. Build for release (optimized):
-   ```bash
-   cargo build --release
-   ```
-
-   The binary will be available at:
-   - Windows: `target/release/blink.exe`
-   - Unix-like: `target/release/blink`
-
-### Running and Installation
-
-There are two main ways to use Blink:
-
-#### Development/Testing Mode
 Using `cargo run` is best for development and debugging:
 ```bash
 # Debug build (slower, with debug symbols)
@@ -282,30 +313,6 @@ cargo run --release -- <pattern> [path...]
 ```
 *Note: The `--` is required to separate cargo's arguments from blink's arguments*
 
-Use this mode when:
-- You're actively developing or debugging
-- You want to test changes immediately
-- You need debug symbols and stack traces
-- You're working within the project directory
-
-#### Production Mode
-For regular usage, install and use the `blink` command directly:
-```bash
-# Install blink globally
-cargo install --path .
-
-# Use from any directory
-blink <pattern> [path...]
-```
-
-Use this mode when:
-- You want maximum performance
-- You're using it as a regular command-line tool
-- You need to run it from any directory
-- You've finished development
-
-The installed version will always be faster as it's pre-compiled in release mode and doesn't need to check for changes.
-
 ### Examples
 
 ```bash
@@ -315,10 +322,8 @@ cargo run -- "TODO"
 # Case-insensitive search with file extension filter
 cargo run -- -i -e rs "fn" src/
 ```
-
+  
 ### Running Tests
-
-Run the test suite:
 ```bash
 # Run all tests
 cargo test
@@ -354,7 +359,7 @@ The performance tests measure search speed across:
 - Medium dataset (1000 files)
 - Large dataset (10000 files)
 
-Run the test suite with coverage (requires cargo-tarpaulin):
+(optional) Run the test suite with coverage (requires cargo-tarpaulin):
 ```bash
 cargo install cargo-tarpaulin
 cargo tarpaulin
