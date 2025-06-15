@@ -1,5 +1,5 @@
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
-| `.\target\release\blink.exe -j 1 TODO benchmark_data\large` | 32.0 ± 6.2 | 21.8 | 47.5 | 1.21 ± 0.36 |
-| `.\target\release\blink.exe -j 4 TODO benchmark_data\large` | 26.3 ± 5.8 | 17.3 | 36.1 | 1.00 |
-| `.\target\release\blink.exe -j 8 TODO benchmark_data\large` | 33.3 ± 7.8 | 20.9 | 56.2 | 1.26 ± 0.41 |
+| `.\target\release\blink.exe -j 1 'TODO' benchmark_data/synthetic/basic_10000_files` | 56.8 ± 9.3 | 44.1 | 80.7 | 2.26 ± 0.55 |
+| `.\target\release\blink.exe -j 4 'TODO' benchmark_data/synthetic/basic_10000_files` | 25.1 ± 4.5 | 16.9 | 34.3 | 1.00 |
+| `.\target\release\blink.exe -j 8 'TODO' benchmark_data/synthetic/basic_10000_files` | 25.4 ± 19.5 | 15.4 | 106.5 | 1.01 ± 0.80 |
