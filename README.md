@@ -198,15 +198,22 @@ blink <pattern> [optional path...]
 
 ### Options
 - `-i, --case-insensitive`: Perform case-insensitive matching
-- `-h, --hidden`: Include hidden files and directories
+- `-H, --hidden`: Include hidden files and directories
 - `-e, --extensions <EXTENSIONS>`: Filter by file extension (e.g., "rs,txt")
 - `-j, --threads <N>`: Number of worker threads (defaults to CPU cores)
+- `-x, --exclude <PATTERNS>`: Exclude files/directories matching these patterns (comma-separated)
 
 ### Examples
 
 ```bash
 # Search for "TODO" in current directory
 blink "TODO"
+
+# Search for "TODO" but exclude benchmark and test directories
+blink -x benchmark,test "TODO"
+
+# Search for "error" excluding specific file types and directories
+blink -x node_modules,target,.git -e rs,txt "error"
 
 # Search for a phrase with spaces
 blink "hello world"
@@ -315,6 +322,18 @@ Run the test suite:
 ```bash
 # Run all tests
 cargo test
+
+# Run only case sensitivity tests (-i command)
+cargo test case_sensitivity
+
+# Run only hidden files tests (-h command)
+cargo test hidden_files
+
+# Run only extension filtering tests (-e command)
+cargo test extension_filtering
+
+# Run only folder exclusion tests (-x command)
+cargo test file_exclusion
 
 # Run tests with output
 cargo test -- --nocapture
