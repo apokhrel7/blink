@@ -45,7 +45,7 @@ mod benchmarks {
             let paths = vec![PathBuf::from(&dir)];
             
             let start = Instant::now();
-            let results = search_files(&pattern, &paths, false, &[]).unwrap();
+            let results = search_files(&pattern, &paths, false, &[], &[]).unwrap();
             let duration = start.elapsed();
 
             println!(

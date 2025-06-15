@@ -25,6 +25,7 @@ pub fn run_benchmarks(c: &mut Criterion) {
                     &[path.clone()],
                     false,
                     &[],
+                    &[],
                 ))
             });
         });
@@ -45,6 +46,7 @@ pub fn run_benchmarks(c: &mut Criterion) {
                     &regex,
                     &[path.clone()],
                     false,
+                    &[],
                     &[],
                 ))
             });
@@ -67,6 +69,7 @@ pub fn run_benchmarks(c: &mut Criterion) {
                     &[path.clone()],
                     false,
                     &[ext.to_string()],
+                    &[],
                 ))
             });
         });
