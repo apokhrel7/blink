@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build ${{ matrix.target }}
@@ -26,7 +29,7 @@ jobs:
             asset_name: blink-macos-amd64
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
@@ -52,13 +55,8 @@ jobs:
     - name: Generate SHA256 checksums
       shell: bash
       run: |
-        cd ${{ github.workspace }}
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          if command -v sha256sum > /dev/null; then
-            sha256sum ${{ matrix.asset_name }}.zip >> SHA256SUMS.txt
-          else
-            certutil -hashfile ${{ matrix.asset_name }}.zip SHA256 | find /v "hash" | find /v "CertUtil" >> SHA256SUMS.txt
-          fi
+          powershell -Command "(Get-FileHash -Algorithm SHA256 -Path ${{ matrix.asset_name }}.zip).Hash.ToLower() + '  ' + '${{ matrix.asset_name }}.zip'" >> SHA256SUMS.txt
         elif [ "${{ matrix.os }}" = "macos-latest" ]; then
           shasum -a 256 ${{ matrix.asset_name }}.tar.gz >> SHA256SUMS.txt
         else
@@ -72,5 +70,3 @@ jobs:
         files: |
           ${{ matrix.asset_name }}.*
           SHA256SUMS.txt
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
